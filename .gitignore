@@ -1,0 +1,10 @@
+.DS_Store
+vue/node_modules
+vue/.vscode
+
+mobile/.expo
+mobile/node_modules
+
+dist
+backend/dist
+backend/node_modules
