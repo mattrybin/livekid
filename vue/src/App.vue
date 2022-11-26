@@ -1,10 +1,17 @@
-<!-- <script setup lang="ts">
-// import HelloWorld from './components/HelloWorld.vue'
-// import TheWelcome from './components/TheWelcome.vue'
-</script> -->
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { useQuery } from './utils/trpc';
+
+const { data } = useQuery('account', reactive({
+  email: "matt@dsadas.com",
+  type: "Awesome"
+}), { immediate: true })
+</script>
 
 <template>
-  <div class="trpc-example">
-    <h1>Vue 3 + vue-query + tRPC example</h1>
-  </div>
+  <div>Typescript - using tRPC</div>
+  <div>accountId: {{ data?.accountId }}</div>
+  <div>givenName: {{ data?.givenName }}</div>
+  <div>familyName: {{ data?.familyName }}</div>
+  <div>gender: {{ data?.gender }}</div>
 </template>

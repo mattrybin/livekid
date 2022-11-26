@@ -1,49 +1,37 @@
-import { z } from "zod"
 import http from "http"
-import { initTRPC } from "@trpc/server"
+import { inferAsyncReturnType, initTRPC } from "@trpc/server"
 
-import { createHTTPServer } from "@trpc/server/adapters/standalone"
+import { createHTTPHandler } from "@trpc/server/adapters/standalone"
 import { generateOpenApiDocument, OpenApiMeta, createOpenApiHttpHandler } from "trpc-openapi"
-import {
-  accountInput,
-  accountOutputDummy,
-  accountOutput,
-  accountCreateInput,
-  accountCreateOutput,
-  accountCreateOutputDummy,
-} from "./specs"
+import { appRouter } from "./router"
 
-export type AppRouter = typeof appRouter
-
-const t = initTRPC.meta<OpenApiMeta>().create()
-export const api = t.procedure
-
-export const appRouter = t.router({
-  account: api
-    .meta({ openapi: { method: "GET", path: "/account/{email}/type/{type}" } })
-    .input(accountInput.extend({ type: z.string() }))
-    .output(accountOutput)
-    .query(accountOutputDummy),
-  accountCreate: api
-    .meta({ openapi: { method: "POST", path: "/account/{email}" } })
-    .input(accountCreateInput)
-    .output(accountCreateOutput)
-    .mutation(accountCreateOutputDummy),
-})
-
-export const openApiDocument = generateOpenApiDocument(appRouter, {
-  title: "tRPC OpenAPI",
-  version: "1.0.0",
-  baseUrl: "http://localhost:3000",
-})
-
-createHTTPServer({
+const trpcHandler = createHTTPHandler({
   router: appRouter,
-  createContext() {
-    return {}
-  },
-}).listen(3100)
+  createContext: () => ({}),
+})
 
-const server = http.createServer(createOpenApiHttpHandler({ router: appRouter }))
+// tRPC Server
+http
+  .createServer((req, res) => {
+    // enable CORS
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Request-Method", "*")
+    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET")
+    res.setHeader("Access-Control-Allow-Headers", "*")
 
-server.listen(3000)
+    // accepts OPTIONS
+    if (req.method === "OPTIONS") {
+      res.writeHead(200)
+      return res.end()
+    }
+    trpcHandler(req, res)
+  })
+  .listen(3100)
+
+// API Server
+// export const openApiDocument = generateOpenApiDocument(appRouter, {
+//   title: "tRPC OpenAPI",
+//   version: "1.0.0",
+//   baseUrl: "http://localhost:3000",
+// })
+http.createServer(createOpenApiHttpHandler({ router: appRouter })).listen(3000)
