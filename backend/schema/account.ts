@@ -28,3 +28,6 @@ export const accountOutputDummy = (): z.infer<typeof Account> => ({
 export const accountCreateInput = Account.omit({ accountId: true })
 export const accountCreateOutput = Account
 export const accountCreateOutputDummy = accountOutputDummy
+
+// Example of creating type from zod
+export type accountType = z.input<typeof Account>
