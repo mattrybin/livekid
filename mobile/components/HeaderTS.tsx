@@ -16,7 +16,7 @@ export const HeaderTS = () => {
 
   return (
     <View>
-      <Text>Header With TS Component</Text>
+      <Text>Typescript - using tRPC</Text>
       <Text>accountId: {data?.accountId}</Text>
       <Text>givenName: {data?.givenName}</Text>
       <Text>familyName: {data?.familyName}</Text>
