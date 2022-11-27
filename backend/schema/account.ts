@@ -30,4 +30,4 @@ export const accountCreateOutput = Account
 export const accountCreateOutputDummy = accountOutputDummy
 
 // Example of creating type from zod
-export type accountType = z.input<typeof Account>
+export type accountType = z.infer<typeof Account>
